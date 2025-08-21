@@ -1,0 +1,40 @@
+{
+  "name": "enterprise-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enterprise microservices platform with Node.js and TypeScript",
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter ./apps/gateway dev\" \"pnpm --filter ./services/* dev\"",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "docker:rebuild": "docker-compose down && docker-compose build --no-cache && docker-compose up -d",
+    "migration:run": "pnpm --filter ./tools/scripts migration:run",
+    "seed:run": "pnpm --filter ./tools/scripts seed:run"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.3"
+  }
+}

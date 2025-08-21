@@ -1,0 +1,29 @@
+{
+  "name": "@enterprise/observability",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@enterprise/config": "workspace:*",
+    "@enterprise/logger": "workspace:*",
+    "@opentelemetry/api": "^1.7.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.41.0",
+    "@opentelemetry/exporter-otlp-http": "^0.46.0",
+    "@opentelemetry/instrumentation-fastify": "^0.33.0",
+    "@opentelemetry/instrumentation-mongoose": "^0.33.0",
+    "@opentelemetry/resources": "^1.18.1",
+    "@opentelemetry/sdk-node": "^0.46.0",
+    "@opentelemetry/semantic-conventions": "^1.18.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3"
+  }
+}

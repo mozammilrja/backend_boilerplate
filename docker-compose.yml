@@ -1,0 +1,239 @@
+version: '3.8'
+
+networks:
+  enterprise:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  redis_data:
+  rabbitmq_data:
+
+services:
+  # Infrastructure
+  mongo:
+    image: mongo:7
+    container_name: enterprise-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: enterprise
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - enterprise
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: enterprise-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - enterprise
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: enterprise-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - enterprise
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Applications
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/gateway/Dockerfile
+    container_name: enterprise-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=development
+      - MONGODB_URI=mongodb://mongo:27017/enterprise
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - GATEWAY_PORT=8080
+      - CORS_ORIGIN=http://localhost:3000
+      - JWT_ACCESS_SECRET=your-super-secret-access-key-change-me
+      - JWT_REFRESH_SECRET=your-super-secret-refresh-key-change-me
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - enterprise
+    volumes:
+      - ./apps/gateway:/app
+      - /app/node_modules
+
+  # Services
+  auth-service:
+    build:
+      context: .
+      dockerfile: services/auth-service/Dockerfile
+    container_name: enterprise-auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - AUTH_SERVICE_PORT=3001
+      - MONGODB_URI=mongodb://mongo:27017/enterprise
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - JWT_ACCESS_SECRET=your-super-secret-access-key-change-me
+      - JWT_REFRESH_SECRET=your-super-secret-refresh-key-change-me
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - enterprise
+
+  user-service:
+    build:
+      context: .
+      dockerfile: services/user-service/Dockerfile
+    container_name: enterprise-user-service
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=development
+      - USER_SERVICE_PORT=3002
+      - MONGODB_URI=mongodb://mongo:27017/enterprise
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - JWT_ACCESS_SECRET=your-super-secret-access-key-change-me
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - enterprise
+
+  product-service:
+    build:
+      context: .
+      dockerfile: services/product-service/Dockerfile
+    container_name: enterprise-product-service
+    ports:
+      - "3003:3003"
+    environment:
+      - NODE_ENV=development
+      - PRODUCT_SERVICE_PORT=3003
+      - MONGODB_URI=mongodb://mongo:27017/enterprise
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - JWT_ACCESS_SECRET=your-super-secret-access-key-change-me
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - enterprise
+
+  order-service:
+    build:
+      context: .
+      dockerfile: services/order-service/Dockerfile
+    container_name: enterprise-order-service
+    ports:
+      - "3004:3004"
+    environment:
+      - NODE_ENV=development
+      - ORDER_SERVICE_PORT=3004
+      - MONGODB_URI=mongodb://mongo:27017/enterprise
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+      - JWT_ACCESS_SECRET=your-super-secret-access-key-change-me
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - enterprise
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: services/notification-service/Dockerfile
+    container_name: enterprise-notification-service
+    ports:
+      - "3005:3005"
+    environment:
+      - NODE_ENV=development
+      - NOTIFICATION_SERVICE_PORT=3005
+      - MONGODB_URI=mongodb://mongo:27017/enterprise
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - enterprise
+
+  inventory-service:
+    build:
+      context: .
+      dockerfile: services/inventory-service/Dockerfile
+    container_name: enterprise-inventory-service
+    ports:
+      - "3006:3006"
+    environment:
+      - NODE_ENV=development
+      - INVENTORY_SERVICE_PORT=3006
+      - MONGODB_URI=mongodb://mongo:27017/enterprise
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - enterprise

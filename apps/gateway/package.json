@@ -1,0 +1,35 @@
+{
+  "name": "@apps/gateway",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --ext .ts",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@enterprise/auth": "workspace:*",
+    "@enterprise/config": "workspace:*",
+    "@enterprise/event-bus": "workspace:*",
+    "@enterprise/logger": "workspace:*",
+    "@enterprise/observability": "workspace:*",
+    "@enterprise/types": "workspace:*",
+    "@enterprise/validation": "workspace:*",
+    "@fastify/cors": "^8.4.2",
+    "@fastify/helmet": "^11.1.1",
+    "@fastify/rate-limit": "^9.0.1",
+    "@fastify/reply-from": "^9.6.0",
+    "fastify": "^4.25.2",
+    "socket.io": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  }
+}

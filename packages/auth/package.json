@@ -1,0 +1,27 @@
+{
+  "name": "@enterprise/auth",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@enterprise/config": "workspace:*",
+    "@enterprise/logger": "workspace:*",
+    "@enterprise/types": "workspace:*",
+    "bcrypt": "^5.1.1",
+    "fastify": "^4.25.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3"
+  }
+}
