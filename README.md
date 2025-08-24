@@ -33,7 +33,8 @@ enterprise-app/
 ### Prerequisites
 - Node.js 20+
 - pnpm 8+
-- Docker & Docker Compose
+- Docker & Docker Compose (for Redis and RabbitMQ)
+- MongoDB Atlas connection (provided)
 
 ### Installation & Setup
 

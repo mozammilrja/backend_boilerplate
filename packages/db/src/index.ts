@@ -186,4 +186,18 @@ export function setupGracefulShutdown(): void {
   process.on('SIGINT', () => shutdown('SIGINT'));
 }
 
+// Fix missing traceDbOperation export
+export async function traceDbOperation<T>(
+  operation: string,
+  collection: string,
+  fn: () => Promise<T>
+): Promise<T> {
+  // Simple implementation - in production this would use OpenTelemetry
+  try {
+    return await fn();
+  } catch (error) {
+    logger.error({ error, operation, collection }, 'Database operation failed');
+    throw error;
+  }
+}
 export { mongoose, Schema, type Connection };

@@ -5,31 +5,11 @@ networks:
     driver: bridge
 
 volumes:
-  mongodb_data:
   redis_data:
   rabbitmq_data:
 
 services:
   # Infrastructure
-  mongo:
-    image: mongo:7
-    container_name: enterprise-mongo
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password
-      MONGO_INITDB_DATABASE: enterprise
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - enterprise
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   redis:
     image: redis:7-alpine
     container_name: enterprise-redis
